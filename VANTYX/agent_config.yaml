@@ -1,0 +1,202 @@
+# ============================================================================
+# HOMELAB AI AGENT CONFIGURATION
+# ============================================================================
+# 
+# This is the main configuration file for the Homelab AI Agent.
+# Copy this file to 'agent_config.yaml' and customize the values.
+#
+# IMPORTANT: Never commit this file with real tokens or sensitive data!
+#
+# ============================================================================
+
+
+# ============================================================================
+# DISCORD BOT CONFIGURATION
+# ============================================================================
+# 
+# To get a Discord bot token:
+# 1. Go to https://discord.com/developers/applications
+# 2. Click "New Application" and give it a name
+# 3. Go to the "Bot" tab and click "Add Bot"
+# 4. Click "Reset Token" to generate a new token
+# 5. Copy the token and paste it below
+# 6. Enable "MESSAGE CONTENT INTENT" under Privileged Gateway Intents
+#
+# To get your Discord User ID (for admin access):
+# 1. Open Discord Settings -> Advanced
+# 2. Enable "Developer Mode"
+# 3. Right-click your username and select "Copy User ID"
+#
+discord:
+  # Your Discord bot token (KEEP THIS SECRET!)
+  # Example: "MTIzNDU2Nzg5MDEyMzQ1Njc4OQ.ABC123.xyz789..."
+  bot_token: "YOUR_DISCORD_BOT_TOKEN_HERE"
+  
+  # Command prefix for bot commands (default: !)
+  # Examples: "!", "?", ".", "agent "
+  command_prefix: "!"
+  
+  # List of Discord User IDs that have admin privileges
+  # These users can approve destructive actions
+  # Get your ID: Discord Settings -> Advanced -> Developer Mode -> Right-click name -> Copy User ID
+  admin_user_ids:
+    - "123456789012345678"  # Replace with your actual Discord User ID
+    # - "987654321098765432"  # Add more admin IDs as needed
+
+
+# ============================================================================
+# AGENT SETTINGS
+# ============================================================================
+
+agent:
+  # DRY-RUN MODE (HIGHLY RECOMMENDED TO START WITH TRUE)
+  # When true: Commands will simulate actions without making real changes
+  # When false: Commands will actually move/delete files, control VMs, etc.
+  # 
+  # SAFETY TIP: Keep this TRUE until you've tested all commands and are
+  # confident the agent is working correctly!
+  dry_run: true
+  
+  # Path to the SQLite database for audit logging
+  # All actions are logged here for security and debugging
+  database_path: "audit.db"
+  
+  # Log file path for text-based logging
+  log_file: "agent.log"
+
+
+# ============================================================================
+# FILE SCANNER CONFIGURATION
+# ============================================================================
+# 
+# The scanner looks for FL Studio files in the specified directories.
+# Supported extensions: .flp (projects), .wav, .mp3, .fst (presets)
+#
+
+scanner:
+  # Default paths to scan when no path is specified
+  # Use Windows-style paths with backslashes (escaped as \\)
+  # Or use forward slashes which work on Windows too
+  default_paths:
+    - "D:/Music/FL Studio Projects"
+    - "D:/Music/Samples"
+    # - "E:/Audio Projects"
+  
+  # File extensions to scan for
+  extensions:
+    - ".flp"    # FL Studio Project files
+    - ".wav"    # WAV audio files
+    - ".mp3"    # MP3 audio files
+    - ".fst"    # FL Studio State files (plugin presets)
+  
+  # Maximum recursion depth for scanning (null = unlimited)
+  max_depth: null
+  
+  # Skip directories matching these patterns
+  exclude_patterns:
+    - ".git"
+    - "node_modules"
+    - "__pycache__"
+    - "Backup"  # Don't scan backup folders
+
+
+# ============================================================================
+# BACKUP CONFIGURATION
+# ============================================================================
+# 
+# Backups are organized by date in the backup folder:
+# D:\AI\Backups\2024-01-15\ProjectName\files...
+#
+
+backup:
+  # Root directory for all backups
+  # Will be created automatically if it doesn't exist
+  backup_path: "D:/AI/Backups"
+  
+  # Preserve folder structure when backing up files
+  preserve_structure: true
+  
+  # Verify backups using SHA-256 hash comparison
+  verify_backups: true
+  
+  # Include related sample files when backing up a project
+  include_samples: true
+
+
+# ============================================================================
+# VMWARE CONFIGURATION
+# ============================================================================
+# 
+# VMware Workstation integration for VM control.
+# Requires VMware Workstation to be installed.
+#
+# vmrun.exe is typically located at:
+# - C:\Program Files (x86)\VMware\VMware Workstation\vmrun.exe
+# - C:\Program Files\VMware\VMware Workstation\vmrun.exe
+#
+
+vmware:
+  # Enable/disable VMware integration
+  enabled: false
+  
+  # Path to vmrun.exe (VMware command-line tool)
+  vmrun_path: "C:/Program Files (x86)/VMware/VMware Workstation/vmrun.exe"
+  
+  # List of VMs that can be controlled by the agent
+  # Only VMs listed here can be started/stopped via Discord
+  # This is a security feature to prevent controlling arbitrary VMs
+  vms:
+    - name: "dev-server"
+      vmx_path: "D:/VMs/DevServer/DevServer.vmx"
+      description: "Development server (Ubuntu 22.04)"
+    
+    - name: "windows-test"
+      vmx_path: "D:/VMs/WindowsTest/Windows.vmx"
+      description: "Windows 11 test environment"
+    
+    # Add more VMs as needed:
+    # - name: "media-server"
+    #   vmx_path: "D:/VMs/MediaServer/MediaServer.vmx"
+    #   description: "Plex media server"
+
+
+# ============================================================================
+# APPROVAL WORKFLOW SETTINGS
+# ============================================================================
+# 
+# Certain actions require approval from an admin before execution.
+# This adds a safety layer to prevent accidental data loss.
+#
+
+approval:
+  # Actions that always require approval (cannot be disabled)
+  required_actions:
+    - "file_delete"
+    - "vm_snapshot_revert"
+    - "bulk_backup"
+  
+  # Actions that can be configured to require approval
+  optional_approval:
+    file_move: true
+    file_backup: false
+    vm_start: false
+    vm_stop: true
+    vm_snapshot_create: false
+  
+  # Auto-expire approval requests after this many hours
+  # Set to 0 to never expire
+  request_expiry_hours: 24
+
+
+# ============================================================================
+# END OF CONFIGURATION
+# ============================================================================
+# 
+# After configuring this file:
+# 1. Save it as 'agent_config.yaml' (not the example file)
+# 2. Run: python main.py --validate  (to check for errors)
+# 3. Run: python main.py             (to start the agent in dry-run mode)
+# 4. Test all commands in Discord
+# 5. When ready, set dry_run: false
+#
+# ============================================================================

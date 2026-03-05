@@ -1,0 +1,32 @@
+# ============================================================================
+# HOMELAB AI AGENT - PYTHON DEPENDENCIES
+# ============================================================================
+#
+# Install with: pip install -r requirements.txt
+#
+# These are the core dependencies for the Homelab AI Agent.
+# Python 3.11+ is required.
+#
+# ============================================================================
+
+# Discord bot framework
+# Provides the bot command system and Discord API integration
+discord.py>=2.3.0
+
+# YAML configuration file parsing
+# Used to read agent_config.yaml
+PyYAML>=6.0
+
+# Note: The following are part of Python's standard library
+# and don't need to be installed:
+# - sqlite3 (database for audit logging)
+# - asyncio (async/await support)
+# - pathlib (file path handling)
+# - subprocess (for running vmrun.exe)
+# - logging (file and console logging)
+# - hashlib (file verification with SHA-256)
+# - shutil (file copying)
+# - dataclasses (structured data)
+# - typing (type hints)
+discord.py
+PyYAML
